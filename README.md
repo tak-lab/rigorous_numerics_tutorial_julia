@@ -16,4 +16,3 @@
 3. git add -A
 4. git commit -m "コミットメッセージ"
 5. git push
-
