@@ -1,1 +1,3 @@
 # rigorous_numerics_tutorial_julia
+
+julia言語を使った精度保証付き数値計算のチュートリアル
