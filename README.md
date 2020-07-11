@@ -11,9 +11,9 @@
 
 # gitの基本操作
 
-1. git pull
+1. `git pull`
 2. （各自ファイルを変更）
-3. git add -A
-4. git commit -m "コミットメッセージ"
-5. git push
+3. `git add -A`
+4. `git commit -m "コミットメッセージ"`
+5. `git push`
 
