@@ -22,7 +22,7 @@
 1. 整数・浮動小数点数（[floating-point.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/floating-point.html)）
 1. 丸め誤差・その他の誤差（[rounding-error.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/rounding-error.html)）
 1. 区間演算（[interval-arithmetic.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/interval-arithmetic.html)）
-1. ベクトルの内積・行列ベクトル積・行列積（Blasを使う区間演算->できない！、丸めの変更をしない方法）（interval_dot-mul.ipynb, nearest-IntervalArithmetic.ipynb）
+1. ベクトルの内積・行列ベクトル積・行列積（Blasを使う区間演算->丸めの制御ができない！、丸めの変更をしない方法で実装する）（interval_dot-mul.ipynb）
 1. 線型方程式（みんなで）
 1. 固有値問題（井藤さん）
 1. 高速フーリエ変換の精度保証（井藤さん）
