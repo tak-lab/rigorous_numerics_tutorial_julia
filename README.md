@@ -24,7 +24,7 @@
 1. 区間演算（[interval-arithmetic.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/interval-arithmetic.html)）
 1. ベクトルの内積・行列ベクトル積・行列積（丸めの変更をしないでBlasを使う区間演算）（[interval_dot-mul.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/interval_dot-mul.html)）
 1. 線型方程式（丸めの変更をしないでBlasを使う精度保証）（verifylss.ipynb）
-1. 固有値問題（井藤さん）
+1. 固有値問題（井藤さん,verifyalleig.ipynb）
 1. 高速フーリエ変換の精度保証（井藤さん）
-1. 非線形方程式（大谷くん）
+1. 非線形方程式（大谷くん, verifynlss,ipynb）
 1. 常微分方程式の周期解（大谷くん）
