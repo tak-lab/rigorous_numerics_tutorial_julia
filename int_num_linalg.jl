@@ -90,10 +90,17 @@ function int_mul(A::Matrix{T}, B::Matrix{T}) where T
     Cmid, Crad = mm_ufp(A, B);
     return Cmid .± Crad
 end
-function int_mul(A::Matrix{Interval{T}}, B::Matrix{Interval{T}}) where T
-    Cmid, Crad = imm_ufp(mid.(A), radius.(A), mid.(B), radius.(B));
+
+function int_mul(A::Matrix{Interval{T}}, B::Matrix{T}) where T
+    Cmid, Crad = imm_ufp(mid.(A), radius.(A), B, zeros(size(B)));
     return Cmid .± Crad
 end
+
+function int_mul(A::Matrix{T}, B::Matrix{Interval{T}}) where T
+    Cmid, Crad = imm_ufp(A, zeros(size(A)), mid.(B), radius.(B));
+    return Cmid .± Crad
+end
+
 function int_mul(A::Matrix{Complex{T}}, B::Matrix{T}) where T
     Ar = real.(A); Ai = imag.(A); # (Ar + im*Ai)*B = Ar*B + im*(Ai*B)
     return int_mul(Ar, B) + im * int_mul(Ar, B)
