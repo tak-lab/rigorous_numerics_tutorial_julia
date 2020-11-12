@@ -30,6 +30,6 @@
 1. Newton-Kantorovich type argument (radii-polynomial approach)（大谷くん、有限次元・無限次元両方いける。radii-ppolynomial.ipynb）
 1. 常微分方程式の周期解（大谷くんの卒論、ロトカ・ヴォルテラ方程式の周期解をradii-polynomialで検証）
 
-# 構成ファイルの説明（.jlファイルだけ途中でincludeできる）
+# 構成ファイルの説明（.jlファイルだけ。途中でincludeして使用できる）
 
-- `int_num_linalg.jl`: 丸め向きを変更しない区間行列積（`mm_ufp`、`imm_ufp`）が実装されている。今後、区間行列積の場合分けをする？
+- `int_num_linalg.jl`: 丸め向きを変更しない区間行列積（`int_mul`）が実装されている。入力のタイプによって区間行列積の場合分けをしている。
