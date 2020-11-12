@@ -13,7 +13,7 @@
 
 1. `git pull`
 2. （各自ファイルを変更）
-3. `git add -A`
+3. `git add (編集したファイル名)`
 4. `git commit -m "コミットメッセージ"`
 5. `git push`
 
@@ -26,5 +26,10 @@
 1. 線型方程式（丸めの変更をしないでBlasを使う精度保証）（[verifylss.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifylss.html)）
 1. 固有値問題（井藤さん,verifyalleig.ipynb）
 1. 高速フーリエ変換の精度保証（井藤さん）
-1. 非線形方程式（大谷くん, verifynlss,ipynb）
-1. 常微分方程式の周期解（大谷くん）
+1. 非線形方程式（有限次元：Krawczyk, Interval Newton,大谷くん, verifynlss,ipynb）
+1. Newton-Kantorovich type argument (radii-polynomial approach)（大谷くん、有限次元・無限次元両方いける。radii-ppolynomial.ipynb）
+1. 常微分方程式の周期解（大谷くんの卒論、ロトカ・ヴォルテラ方程式の周期解をradii-polynomialで検証）
+
+# 構成ファイルの説明（.jlファイルだけ途中でincludeできる）
+
+- `int_num_linalg.jl`: 丸め向きを変更しない区間行列積（`mm_ufp`、`imm_ufp`）が実装されている。今後、区間行列積の場合分けをする？
