@@ -10,19 +10,20 @@
 1. 区間演算 -精度保証付き数値計算の入り口-（[interval-arithmetic.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/interval-arithmetic.html)）
 1. ベクトルの内積・行列ベクトル積・行列積の区間演算（[interval_dot-mul.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/interval_dot-mul.html)）
 1. 線型方程式の解の精度保証付き数値計算（[verifylss.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifylss.html)）
-1. 固有値問題（[verifyalleig.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyalleig.html)）
-1. 高速フーリエ変換の精度保証（井藤さん）
-1. 非線形方程式（有限次元：Krawczyk, Interval Newton,大谷くん, [verifynlss.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifynlss.html)）
-1. Newton-Kantorovich type argument (radii-polynomial approach)（大谷くん、有限次元・無限次元両方いける。radii-ppolynomial.ipynb）
-1. 常微分方程式の周期解（大谷くんの卒論、ロトカ・ヴォルテラ方程式の周期解をradii-polynomialで検証）
+1. 標準固有値問題の精度保証付き数値解法（[verifyalleig.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyalleig.html)）
+1. 高速フーリエ変換の精度保証（verifyfft.ipynb）
+1. 非線形方程式（[verifynlss.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifynlss.html)）
+1. Newton-Kantorovich型定理 (radii-polynomial approach)（radii-ppolynomial.ipynb）
+1. フーリエ級数、チェビシェフ級数、離散畳み込み etc.
 
-# 構成ファイルの説明（.jlファイルだけ。途中でincludeして使用できる）
+# 構成ファイルの説明（.jlファイルだけ。途中でincludeして使用している）
 
 - `IntervalLinearAlgebra.jl`: 丸め向きを変更しない区間行列積（`int_mul`）が実装されている。入力のタイプによって区間行列積の場合分けをしている。
+- 今後、区間連立一次方程式、非線形方程式、高速フーリエ変換などを適宜追加予定。
 
 ## 筆者
 
-本資料は、[高安研究室](http://www.taklab.org/)のゼミ資料として作成しています。これまで貢献した人は以下。
+本資料は、[高安研究室](http://www.taklab.org/)のゼミ資料として作成しています。これまで貢献した人々は以下の通りです。
 
 - [舩越康太](https://github.com/2754github)
 - 井藤佳奈子
