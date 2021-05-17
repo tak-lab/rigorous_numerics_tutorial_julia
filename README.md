@@ -13,7 +13,7 @@
 1. 標準固有値問題の精度保証付き数値解法（[verifyalleig.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyalleig.html)）
 1. 高速フーリエ変換の精度保証（[verifyfft.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyfft.html)）
 1. 非線形方程式（[verifynlss.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifynlss.html)）
-1. Newton-Kantorovich型定理 (radii-polynomial approach)（radii-ppolynomial.ipynb）
+1. Newton-Kantorovich型定理 (radii-polynomial approach)（[Newton-Kantorovich.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Newton-Kantorovich.html)）
 1. フーリエ級数、チェビシェフ級数、離散畳み込み etc.
 
 # 構成ファイルの説明（.jlファイルだけ。途中でincludeして使用している）
