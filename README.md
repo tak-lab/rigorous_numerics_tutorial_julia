@@ -14,7 +14,10 @@
 1. 高速フーリエ変換の精度保証（[verifyfft.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyfft.html)）
 1. 非線形方程式（[verifynlss.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifynlss.html)）
 1. Newton-Kantorovich型定理 (radii-polynomial approach)（[Newton-Kantorovich.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Newton-Kantorovich.html)）
-1. フーリエ級数、チェビシェフ級数、離散畳み込み etc.
+1. フーリエ級数（計算機で表現する方法）
+1. 離散畳み込みの精度保証付き数値計算（convtensorの翻訳）
+1. 常微分方程式の周期解の数値検証
+1. チェビシェフ級数、 etc.
 
 # 構成ファイルの説明（.jlファイルだけ。途中でincludeして使用している）
 
