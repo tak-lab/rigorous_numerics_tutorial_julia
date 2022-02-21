@@ -15,13 +15,14 @@
 1. 非線形方程式（[verifynlss.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifynlss.html)）
 1. Newton-Kantorovich型定理 (radii-polynomial approach)（[Newton-Kantorovich.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Newton-Kantorovich.html)）
 1. フーリエ級数（計算機で表現する方法）（[Fourier_series.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Fourier_series.html)）
-1. 離散畳み込みの精度保証付き数値計算（[Discrete_convolution.ipynb]()）
+1. 離散畳み込みの精度保証付き数値計算（discrete_convolution.ipynb）
 1. 常微分方程式の周期解の数値検証
 1. チェビシェフ級数、 etc.
 
 # 構成ファイルの説明（.jlファイルだけ。途中でincludeして使用している）
 
-- `IntervalLinearAlgebra.jl`: 丸め向きを変更しない区間行列積（`int_mul`）が実装されている。入力のタイプによって区間行列積の場合分けをしている。
+- `FourierChebyshev.jl`: フーリエ級数・チェビシェフ級数を扱う関数が記述されている。
+- `IntervalFunctions.jl`: 丸め向きを変更しない区間行列積（`int_mul`）が実装されている。入力のタイプによって区間行列積の場合分けをしている。
 - 今後、区間連立一次方程式、非線形方程式、高速フーリエ変換などを適宜追加予定。
 
 ## 筆者
@@ -31,6 +32,8 @@
 - [舩越康太](https://github.com/2754github)
 - 井藤佳奈子
 - 大谷俊輔
+- 近藤慎佑
+- 高橋和暉
 - [高安亮紀](https://www.risk.tsukuba.ac.jp/~takitoshi/)
 
 ### gitの基本操作(内部向け)
