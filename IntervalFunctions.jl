@@ -86,6 +86,7 @@ function imm_ufp(A_mid, A_rad, B_mid, B_rad) # A = <A_mid, A_rad>, B = <B_mid, B
     return A_mid * B_mid, succ.(rad_sum + 4*u*ufp.(rad_sum))
 end
 
+# USE IntervalArithmetic.jl
 using IntervalArithmetic
 function int_mul(A::Matrix{T}, B::Matrix{T}) where T
     Cmid, Crad = mm_ufp(A, B);
@@ -120,3 +121,77 @@ end
 
 
 ### Interval Linear system solver
+
+
+
+### Verify FFT using Interval Arithmetic
+function verifyfft(z::Vector{T}, sign=1) where T
+    n = length(z); col = 1; array1 = true
+    if n==1
+        Z = map(T,z)
+        return Z
+    else
+        isrow_ = false
+    end
+    log2n = Int(round(log2(n))) #check dimension
+    if 2^log2n ≠ n # return error if n is not the powers of 2
+        error("length must be power of 2")
+    end
+    #bit-reversal
+    f = 2^(log2n-1)
+    v = [0;f]
+    for k = 1:log2n-1
+#         f = 0.5*f
+        f = f >> 1
+        v = append!(v,f.+v)
+    end
+    z2 = zeros(n,col)
+    if isa(real(z[1]),Interval)
+        z2 = map(T,z2)
+    end
+    # replace z
+    for j = 1: n
+        z2[j,:] = z[v[j]+1,:]
+    end
+    #Danielson-Lanczos algorithm
+    Z = complex(map(Interval,z2))
+    Index = reshape([1:n*col;],n,col)
+
+    theta = map(Interval,sign * (0:n-1)/n); # division exact because n is power of 2
+    Phi = cospi.(theta) + im*sinpi.(theta) # SLOW?
+
+    v = [1:2:n;]
+    w = [2:2:n;]
+    t = Z[w,:]
+    Z[w,:]  = Z[v,:] - t
+    Z[v,:]  = Z[v,:] + t
+    for index　in 1: (log2n-1)    
+        m = 2^index
+        m2 = 2*m
+        vw = reshape([1:n;],m2,Int(n/m2))
+        v = vw[1: m, :]
+        w = vw[m+1: m2, : ]
+        indexv = reshape(Index[v[:],:],m,Int(col*n/m2))
+        indexw = reshape(Index[w[:],:],m,Int(col*n/m2))
+        Phi1 = repeat(Phi[1:Int(n/m):end],outer=[1,Int(col*n/m2)])
+        t = Phi1 .*  Z[indexw]
+        Z[indexw] = Z[indexv] - t 
+        Z[indexv] = Z[indexv] + t
+    end
+    reverse(Z[2:end,:],dims=2)
+     if sign==-1
+        Z = Z/n
+    end
+    if isrow_
+        Z = transpose(Z)　#transpose of Z
+    end
+    if array1
+        Z = Z[:,1]
+    end
+    return Z
+end
+
+### Rigorous convolution algorithm via FFT
+
+
+
