@@ -11,6 +11,15 @@ function fouriercoeffs(f, N, I=[0,2π])
     return fftshift(fft(fⱼ))/(2N-1)
 end
 
+function odefouriercoeffs(f, N, I, n=1)
+    a = I[1]; b = I[2];
+    h = (b-a)/(2N-1)
+    j = 0:2N-2
+    xⱼ = a .+ j*h
+    fⱼ = f(xⱼ)[n,:]
+    return fftshift(fft(fⱼ))/(2N-1)
+end
+
 function plot_fourier(bc, I=[0,2π])
     # bc: Fourier coefficients
     a = I[1]; b = I[2]
