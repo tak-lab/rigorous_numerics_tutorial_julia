@@ -16,6 +16,7 @@
 1. Newton-Kantorovich型定理 (radii-polynomial approach)（[Newton-Kantorovich.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Newton-Kantorovich.html)）
 1. フーリエ級数（計算機で表現する方法）（[Fourier_series.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Fourier_series.html)）
 1. 離散畳み込みの精度保証付き数値計算（[discrete_convolution.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/discrete_convolution.html)）
+1. フーリエ・スペクトル法による常微分方程式の周期解の数値計算（[Fourier_spectral_PO.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Fourier_spectral_PO.html)）
 1. 常微分方程式の周期解の数値検証
 1. チェビシェフ級数、 etc.
 
