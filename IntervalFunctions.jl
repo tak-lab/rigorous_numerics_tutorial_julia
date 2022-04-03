@@ -192,6 +192,29 @@ function verifyfft(z::Vector{T}, sign=1) where T
 end
 
 ### Rigorous convolution algorithm via FFT
+function powerconvfourier(a::Vector{Complex{Interval{T}}},p) where T
+    M = Int((length(a)+1)/2) # length(a) = 2M-1
+    N = (p-1)*M
+    ia = map(Interval, a)
 
+    length_ia = 2*p*M-1
+    length_ia_ext = nextpow(2,length_ia)# 2pM-2+2L
+    
+    L = Int((length_ia_ext - length_ia + 1)/2)
+    
+    # step.1 : padding (p-1)M + L zeros for each sides
+    ia_ext = map(Complex{Interval},zeros(length_ia_ext))
+    ia_ext[L+N+1:end-L-N+1] = ia  #\tilda{a}
 
-
+    # step.2 : inverse fft
+    ib_ext = verifyfft(ifftshift(ia_ext), -1) #sign = -1 : ifft
+    
+    # step.3 : power p elementwisely
+    ib_extᵖ = ib_ext.^p
+    
+    # step.4 : fft with rescaling
+    ic_extᵖ = fftshift(verifyfft(ib_extᵖ, 1)) * length_ia_ext^(p-1)  #sign = 1 : fft
+    
+#     return ic_extᵖ,ic_extᵖ
+    return ic_extᵖ[L+N+1:end-N-L+1], ic_extᵖ[L+p:end-(L+p-2)] # return (truncated, full) version
+end
