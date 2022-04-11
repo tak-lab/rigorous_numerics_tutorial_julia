@@ -18,7 +18,8 @@
 1. 離散畳み込みの精度保証付き数値計算（[discrete_convolution.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/discrete_convolution.html)）
 1. フーリエ・スペクトル法による常微分方程式の周期解の数値計算（[Fourier_spectral_PO.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Fourier_spectral_PO.html)）
 1. 常微分方程式の周期解の数値検証（[verifyPO.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyPO.html)）
-1. チェビシェフ級数、 etc.
+1. チェビシェフ級数（[Chebyshev_series.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebyshev_series.html)）
+1. etc.
 
 # 構成ファイルの説明（.jlファイルだけ。途中でincludeして使用している）
 
