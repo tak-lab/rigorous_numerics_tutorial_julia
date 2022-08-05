@@ -148,7 +148,7 @@ function chebcoeffs(f,M,I=[-1,1])
     return ChebCoeffs # return Two-sided Chebyshev
 end
 
-function cheb(f,I=[-1;1];tol = 5e-15,Nmax = 10000)
+function cheb(f,I=[-1;1]; tol = 5e-15,Nmax = 10000)
     a = I[1]; b = I[2]; m = 0.5*(a+b); r = 0.5*(b-a); x = rand(5)
     x1 = m .+ x*r; x2 = m .- x*r
     if f.(x1) ≈ f.(x2)
@@ -190,15 +190,42 @@ function plot_chebcoeffs(f)
     )
 end
 
-function eval_cheb(ChebCoeffs_twosided,x,n=200)
+function eval_cheb(a,x) # Clenshaw's algorithm
+# a: (Two-sided) Chbyshev coefficients
+# x: evaluating points
+    n = length(a)-1
+    bk1 = 0.0
+    bk2 = 0.0
+    x = 2x
+    for r = (n+1):-2:3
+        bk2 = x.*bk1 .- bk2 .+ a[r]
+        bk1 = x.*bk2 .- bk1 .+ a[r-1]
+    end
+    if isodd(n)        
+        b2 = x.*bk1 .- bk2 .+ a[2]
+        bk2 = bk1 # b3
+        bk1 = b2
+    end
+    return -bk2 .+ 0.5x .* bk1 .+ a[1] # y = c(1) + .5*x.*bk1 - bk2;
+end
+
+function eval_cheb_naive(ChebCoeffs_twosided,x; I=[-1,1])
     M = length(ChebCoeffs_twosided) # M: size of chebyshev
-    a = x[1]; b = x[end]
+    a = I[1]; b = I[2]
+    k = 0:M-1
+    ξ = 2*(x.-a)/(b-a) .- 1
+    return cos.(Vector(k)' .* acos.(ξ)) * ChebCoeffs_twosided
+end
+
+function eval_cheb_bc(ChebCoeffs_twosided,x,n=200; I=[-1,1]) # Barycentric interportion formula
+    M = length(ChebCoeffs_twosided) # M: size of chebyshev
+    a = I[1]; b = I[2]
     k = 0:M-1
     ξⱼ = chebpts(n)
     xc = (1.0 .- ξⱼ)*a/2 + (1.0 .+ ξⱼ)*b/2 # Chebyshev points in [a,b]
     fxc = cos.(Vector(k)' .* acos.(ξⱼ)) * ChebCoeffs_twosided
     valnum = length(x)
-    ξ = 2*(x.-a)/(b-a) .- 1;
+    ξ = 2*(x.-a)/(b-a) .- 1
     # ξ = range(-1,stop=1,length=valnum)
     x = (1.0 .- ξ)*a/2 + (1.0 .+ ξ)*b/2
     λ = [1/2; ones(n-1); 1/2] .* (-1).^(0:n)
@@ -222,66 +249,18 @@ function eval_cheb(ChebCoeffs_twosided,x,n=200)
     return fx
 end
 
-function plot_cheb(ChebCoeffs_twosided;n=200,I=[-1,1],title="",label="",legend=true) # Input: Two-sided Chebyshev
+function plot_cheb(ChebCoeffs_twosided; I=[-1,1],title="",label="",legend=true) # Input: Two-sided Chebyshev
     # M = length(ChebCoeffs_twosided) # M: size of chebyshev
     a = I[1]; b = I[2]; 
     x = range(a,stop=b,length=5000)
-    fx = eval_cheb(ChebCoeffs_twosided,x,n)
-#     k = 0:M-1
-#     ξⱼ = chebpts(n)
-#     xc = (1.0 .- ξⱼ)*a/2 + (1.0 .+ ξⱼ)*b/2 # Chebyshev points in [a,b]
-#     fxc = cos.(Vector(k)' .* acos.(ξⱼ)) * ChebCoeffs_twosided
-    
-#     ξ = range(-1,stop=1,length=2000)
-#     x = (1.0 .- ξ)*a/2 + (1.0 .+ ξ)*b/2
-#     λ = [1/2; ones(n-1); 1/2] .* (-1).^(0:n)
-
-#     numer = zeros(size(x))
-#     denom = zeros(size(x))
-#     exact = zeros(Bool,size(x))
-
-#     for j = 1:n+1
-#         xdiff = x .- xc[j]
-#         temp = λ[j] ./ xdiff
-#         numer += temp * fxc[j]
-#         denom += temp
-#         exact[xdiff.==0] .= true
-#     end
-
-#     fx = numer ./ denom
-#     jj = findall(exact)
-#     fx[jj] = f.(x[jj])
+    fx = eval_cheb(ChebCoeffs_twosided,x)
     plot(x, fx, legend=legend, label=label, title=title, xlabel="\$x\$",ylabel="\$f(x)\$")
 end
 
-function plot_cheb!(ChebCoeffs_twosided;n=200,I=[-1,1],title="",label="",legend=true) # Input: Two-sided Chebyshev
+function plot_cheb!(ChebCoeffs_twosided; I=[-1,1],title="",label="",legend=true) # Input: Two-sided Chebyshev
     # M = length(ChebCoeffs_twosided) # M: size of chebyshev
     a = I[1]; b = I[2]; 
     x = range(a,stop=b,length=5000)
-    fx = eval_cheb(ChebCoeffs_twosided,x,n)
-#     k = 0:M-1
-#     ξⱼ = chebpts(n)
-#     xc = (1.0 .- ξⱼ)*a/2 + (1.0 .+ ξⱼ)*b/2 # Chebyshev points in [a,b]
-#     fxc = cos.(Vector(k)' .* acos.(ξⱼ)) * ChebCoeffs_twosided
-    
-#     ξ = range(-1,stop=1,length=2000)
-#     x = (1.0 .- ξ)*a/2 + (1.0 .+ ξ)*b/2
-#     λ = [1/2; ones(n-1); 1/2] .* (-1).^(0:n)
-
-#     numer = zeros(size(x))
-#     denom = zeros(size(x))
-#     exact = zeros(Bool,size(x))
-
-#     for j = 1:n+1
-#         xdiff = x .- xc[j]
-#         temp = λ[j] ./ xdiff
-#         numer += temp * fxc[j]
-#         denom += temp
-#         exact[xdiff.==0] .= true
-#     end
-
-#     fx = numer ./ denom
-#     jj = findall(exact)
-#     fx[jj] = f.(x[jj])
+    fx = eval_cheb(ChebCoeffs_twosided,x)
     plot!(x, fx, legend=legend, label=label, title=title, xlabel="\$x\$",ylabel="\$f(x)\$")
 end

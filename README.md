@@ -19,6 +19,7 @@
 1. フーリエ・スペクトル法による常微分方程式の周期解の数値計算（[Fourier_spectral_PO.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Fourier_spectral_PO.html)）
 1. 常微分方程式の周期解の数値検証（[verifyPO.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyPO.html)）
 1. チェビシェフ級数（[Chebyshev_series.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebyshev_series.html)）
+1. Clenshawのアルゴリズム（[Clenshaw.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Clenshaw.html)）
 1. etc.
 
 # 構成ファイルの説明（.jlファイルだけ。途中でincludeして使用している）
@@ -36,6 +37,8 @@
 - 大谷俊輔
 - 近藤慎佑
 - 高橋和暉
+- 瀬戸翔太
+- 二平泰知
 - [高安亮紀](https://www.risk.tsukuba.ac.jp/~takitoshi/)
 
 ### gitの基本操作(内部向け)

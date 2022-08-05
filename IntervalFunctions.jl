@@ -103,6 +103,11 @@ function int_mul(A::Matrix{T}, B::Matrix{Interval{T}}) where T
     return Cmid .± Crad
 end
 
+function int_mul(A::Matrix{Interval{T}}, B::Matrix{Interval{T}}) where T
+    Cmid, Crad = imm_ufp(mid.(A), radius.(A), mid.(B), radius.(B));
+    return Cmid .± Crad
+end
+
 function int_mul(A::Matrix{Complex{T}}, B::Matrix{T}) where T
     Ar = real.(A); Ai = imag.(A); # (Ar + im*Ai)*B = Ar*B + im*(Ai*B)
     return int_mul(Ar, B) + im * int_mul(Ar, B)
@@ -141,7 +146,6 @@ function verifyfft(z::Vector{T}, sign=1) where T
     f = 2^(log2n-1)
     v = [0;f]
     for k = 1:log2n-1
-#         f = 0.5*f
         f = f >> 1
         v = append!(v,f.+v)
     end
