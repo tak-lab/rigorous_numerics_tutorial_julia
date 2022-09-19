@@ -4,23 +4,25 @@
 
 # 目次
 
-1. はじめに -間違える数値計算-（[nonrigorous_numerics.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/nonrigorous_numerics.html)）
-1. 整数・浮動小数点数（[floating-point.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/floating-point.html)）
-1. 丸め誤差・その他の誤差（[rounding-error.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/rounding-error.html)）
-1. 区間演算 -精度保証付き数値計算の入り口-（[interval-arithmetic.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/interval-arithmetic.html)）
-1. ベクトルの内積・行列ベクトル積・行列積の区間演算（[interval_dot-mul.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/interval_dot-mul.html)）
-1. 線型方程式の解の精度保証付き数値計算（[verifylss.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifylss.html)）
-1. 標準固有値問題の精度保証付き数値解法（[verifyalleig.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyalleig.html)）
-1. 高速フーリエ変換の精度保証（[verifyfft.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyfft.html)）
-1. 非線形方程式（[verifynlss.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifynlss.html)）
-1. Newton-Kantorovich型定理 (radii-polynomial approach)（[Newton-Kantorovich.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Newton-Kantorovich.html)）
-1. フーリエ級数（計算機で表現する方法）（[Fourier_series.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Fourier_series.html)）
-1. 離散畳み込みの精度保証付き数値計算（[discrete_convolution.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/discrete_convolution.html)）
-1. フーリエ・スペクトル法による常微分方程式の周期解の数値計算（[Fourier_spectral_PO.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Fourier_spectral_PO.html)）
-1. 常微分方程式の周期解の数値検証（[verifyPO.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyPO.html)）
-1. チェビシェフ級数（[Chebyshev_series.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebyshev_series.html)）
-1. Clenshawのアルゴリズム（[Clenshaw.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Clenshaw.html)）
-1. etc.
+- はじめに -間違える数値計算-（[nonrigorous_numerics.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/nonrigorous_numerics.html)）
+- 整数・浮動小数点数（[floating-point.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/floating-point.html)）
+- 丸め誤差・その他の誤差（[rounding-error.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/rounding-error.html)）
+- 区間演算 -精度保証付き数値計算の入り口-（[interval-arithmetic.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/interval-arithmetic.html)）
+- ベクトルの内積・行列ベクトル積・行列積の区間演算（[interval_dot-mul.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/interval_dot-mul.html)）
+- 線型方程式の解の精度保証付き数値計算（[verifylss.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifylss.html)）
+- 標準固有値問題の精度保証付き数値解法（[verifyalleig.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyalleig.html)）
+- 部分固有対の精度保証付き数値計算（[verifyeig.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyeig.html)）
+- 高速フーリエ変換の精度保証（[verifyfft.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyfft.html)）
+- 非線形方程式（[verifynlss.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifynlss.html)）
+- Newton-Kantorovich型定理 (radii-polynomial approach)（[Newton-Kantorovich.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Newton-Kantorovich.html)）
+- フーリエ級数（計算機で表現する方法）（[Fourier_series.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Fourier_series.html)）
+- 離散畳み込みの精度保証付き数値計算（[discrete_convolution.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/discrete_convolution.html)）
+- フーリエ・スペクトル法による常微分方程式の周期解の数値計算（[Fourier_spectral_PO.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Fourier_spectral_PO.html)）
+- 常微分方程式の周期解の数値検証（[verifyPO.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyPO.html)）
+- チェビシェフ級数（[Chebyshev_series.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebyshev_series.html)）
+- Clenshawのアルゴリズム（[Clenshaw.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Clenshaw.html)）
+-
+etc.
 
 # 構成ファイルの説明（.jlファイルだけ。途中でincludeして使用している）
 
