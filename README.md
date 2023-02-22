@@ -21,6 +21,7 @@
 - 常微分方程式の周期解の数値検証（[verifyPO.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/verifyPO.html)）
 - チェビシェフ級数（[Chebyshev_series.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebyshev_series.html)）
 - Clenshawのアルゴリズム（[Clenshaw.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Clenshaw.html)）
+- Chebyshev補間の微分（[Chebdiff.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebdiff.html)）
 -
 etc.
 
