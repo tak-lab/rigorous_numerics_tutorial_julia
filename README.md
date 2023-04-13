@@ -23,6 +23,7 @@
 - Clenshawのアルゴリズム（[Clenshaw.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Clenshaw.html)）
 - Chebyshev補間の微分（[Chebdiff.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebdiff.html)）
 - Chebyshev補間の積分（[Chebint.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebint.html)）
+- Chebyshev補間の求根（[Chebroot.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebroot.html)）
 -
 etc.
 

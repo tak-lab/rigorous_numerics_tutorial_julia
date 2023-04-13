@@ -190,9 +190,9 @@ function plot_chebcoeffs(f)
     )
 end
 
-function eval_cheb(a,x) # Clenshaw's algorithm
+function clenshaw(a,x) # Clenshaw's algorithm
 # a: (Two-sided) Chbyshev coefficients
-# x: evaluating points
+# x: evaluating points in [-1,1]
     n = length(a)-1
     bk1 = 0.0
     bk2 = 0.0
@@ -207,6 +207,27 @@ function eval_cheb(a,x) # Clenshaw's algorithm
         bk1 = b2
     end
     return -bk2 .+ 0.5x .* bk1 .+ a[1] # y = c(1) + .5*x.*bk1 - bk2;
+end
+
+function clenshaw_secondkind(a,x) # Clenshaw's algorithm
+# a: (Two-sided) Chbyshev coefficients
+# x: evaluating points in [-1,1]
+    n = length(a)-1
+    bk0 = 0
+    bk1 = 0
+    for r = (n+1):-1:1
+        tmp = 2x.*bk0 .- bk1 .+ a[r]
+        bk1 = bk0
+        bk0 = tmp
+    end
+    return bk0 #.+ bk1*(-x)
+end
+
+function eval_cheb(a,x; I=[-1,1])
+# a: (Two-sided) Chbyshev coefficients
+# x: evaluating points in domain
+    ξ = 2*(x.-I[1])/(I[2]-I[1]) .- 1
+    return clenshaw(a,ξ)
 end
 
 function eval_cheb_naive(ChebCoeffs_twosided,x; I=[-1,1])
@@ -227,7 +248,7 @@ function eval_cheb_bc(ChebCoeffs_twosided,x,n=200; I=[-1,1]) # Barycentric inter
     valnum = length(x)
     ξ = 2*(x.-a)/(b-a) .- 1
     # ξ = range(-1,stop=1,length=valnum)
-    x = (1.0 .- ξ)*a/2 + (1.0 .+ ξ)*b/2
+    # x = (1.0 .- ξ)*a/2 + (1.0 .+ ξ)*b/2
     λ = [1/2; ones(n-1); 1/2] .* (-1).^(0:n)
 
     numer = zeros(valnum)
@@ -251,16 +272,65 @@ end
 
 function plot_cheb(ChebCoeffs_twosided; I=[-1,1],title="",label="",legend=true) # Input: Two-sided Chebyshev
     # M = length(ChebCoeffs_twosided) # M: size of chebyshev
-    a = I[1]; b = I[2]; 
-    x = range(a,stop=b,length=5000)
-    fx = eval_cheb(ChebCoeffs_twosided,x)
+    # a = I[1]; b = I[2]; 
+    x = range(I[1],stop=I[2],length=5000)
+    # ξ = 2*(x.-a)/(b-a) .- 1
+    fx = eval_cheb(ChebCoeffs_twosided,x,I=I)
     plot(x, fx, legend=legend, label=label, title=title, xlabel="\$x\$",ylabel="\$f(x)\$")
 end
 
 function plot_cheb!(ChebCoeffs_twosided; I=[-1,1],title="",label="",legend=true) # Input: Two-sided Chebyshev
     # M = length(ChebCoeffs_twosided) # M: size of chebyshev
-    a = I[1]; b = I[2]; 
-    x = range(a,stop=b,length=5000)
-    fx = eval_cheb(ChebCoeffs_twosided,x)
+    # a = I[1]; b = I[2]; 
+    x = range(I[1],stop=I[2],length=5000)
+    # ξ = 2*(x.-a)/(b-a) .- 1
+    fx = eval_cheb(ChebCoeffs_twosided,x,I=I)
     plot!(x, fx, legend=legend, label=label, title=title, xlabel="\$x\$",ylabel="\$f(x)\$")
+end
+
+function chebdiff(a; I=[-1,1])# Input is Two-sided
+    M = length(a)
+    b = zeros(M+1)
+    for r = M-1:-1:1
+        b[r] = b[r+2] + 2*r*a[r+1]
+    end
+    b[1] /= 2.0
+    return b[setdiff(1:end,end)]*(2/(I[2]-I[1])) # Output is Two-sided
+end
+
+function chebdiff_oneside(a; I=[-1,1])# Input is One-sided
+    M = length(a)
+    b = zeros(M+1)
+    for r = M-1:-1:1
+        b[r] = b[r+2] + 2*r*a[r+1]
+    end
+    return b[setdiff(1:end,end)]*(2/(I[2]-I[1])) # Output is One-sided
+end
+
+function chebdiff_secondkind(a; I=[-1,1])　# Input is Two-sided
+    M = length(a)
+    b = zeros(M-1)
+    for n = 0:M-2
+        b[n+1] = (n+1)*a[n+2]
+    end
+    return b*(2/(I[2]-I[1]))　# Output is second kind (Two-sided)
+end
+
+function chebindefint(a; I=[-1,1])# Input is Two-sided
+    M = length(a)
+    a_ext = zeros(M+2)
+    a_ext[1] = 2*a[1]
+    a_ext[2:M] = a[2:M]
+    A = zeros(M+1)
+    for n = 1:M
+        A[n+1] = (a_ext[n] - a_ext[n+2])/(2n)
+    end
+    # A[1] = sum(A[2:2:end]) - sum(A[3:2:end]) # takes the value 0 at the left endpoint
+    return A * (I[2]-I[1])/2
+end
+
+function chebint(a; I=[-1,1])# Input is Two-sided
+    M = length(a)
+    n = 0:2:M-1
+    return sum(2a[1:2:end]./(1.0 .- n.^2))*((I[2]-I[1])/2)
 end
