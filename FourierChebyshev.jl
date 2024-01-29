@@ -130,9 +130,9 @@ end
 
 
 ### Chebyshev functions
-function chebpts(n, a=-1, b=1) # n: maximum order of Chebyshev polynomials
-    tt = range(0, stop=π, length=n+1)
-    x = cos.(tt)
+function chebpts(n, a=-1, b=1) # n: order of Chebyshev polynomials
+    m = -n:2:n
+    x = sinpi.(m/(2*n))
     return (1.0 .- x).*a/2 + (1.0 .+ x).*b/2
 end
 
@@ -141,7 +141,7 @@ function chebcoeffs(f,M,I=[-1,1])
     n = M-1
     cpts  = chebpts(n, a, b)
     fvals = f.(cpts)
-    FourierCoeffs = real(fft([fvals;reverse(fvals[2:end-1])]))
+    FourierCoeffs = real(fft([reverse(fvals);fvals[2:end-1]]))
     ChebCoeffs = FourierCoeffs[1:n+1]/n
     ChebCoeffs[1] = ChebCoeffs[1]/2
     ChebCoeffs[end] = ChebCoeffs[end]/2
@@ -168,7 +168,8 @@ function cheb(f,I=[-1;1]; tol = 5e-15,Nmax = 10000)
         i += 1
     end    
     M = findlast(abs.(schbc) .> tol)
-    cc = chebcoeffs(f,M,I)
+    cc = schbc[1:M]
+    # cc = chebcoeffs(f,M,I)
     if odd_even == 1 # even function
         cc[2:2:end] .= 0
     elseif odd_even == -1 # odd function
