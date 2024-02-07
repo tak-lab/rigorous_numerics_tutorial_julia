@@ -24,12 +24,13 @@
 - Chebyshev補間の微分（[Chebdiff.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebdiff.html)）
 - Chebyshev補間の積分（[Chebint.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebint.html)）
 - Chebyshev補間の求根（[Chebroot.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebroot.html)）
+- Chebyshev補間の最大・最小値（[Chebminmax.ipynb](https://www.risk.tsukuba.ac.jp/~takitoshi/tutorial/Chebminmax.html)）
 -
 etc.
 
 # 構成ファイルの説明（.jlファイルだけ。途中でincludeして使用している）
 
-- `FourierChebyshev.jl`: フーリエ級数・チェビシェフ級数を扱う関数が記述されている。
+- `FourierChebyshev.jl`: フーリエ級数・チェビシェフ級数を扱う関数が記述されている（区間演算なし）。
 - `IntervalFunctions.jl`: 丸め向きを変更しない区間行列積（`int_mul`）や区間演算を使ったFFTの`verifyfft`、FFTを使った離散畳み込みの計算（`powerconvfourier`）が実装されている。入力のタイプによって区間行列積の場合分けをしている。
 - 今後、区間連立一次方程式、非線形方程式などを適宜追加予定。
 
