@@ -29,8 +29,8 @@ function plot_fourier(bc, I=[0,2π])
     N_pad = N + n_pad
     h_pad = (b-a)/(2N_pad-1)
     xj_pad = a .+ h_pad*(0:2N_pad-2)
-　　fNj_pad = real((2N_pad-1)*ifft(ifftshift(bc_pad)))
-　　plot(xj_pad, fNj_pad, legend=false, xlabel = "\$x\$", ylabel = "\$f(x)\$")
+    fNj_pad = real((2N_pad-1)*ifft(ifftshift(bc_pad)))
+    plot(xj_pad, fNj_pad, legend=false, xlabel = "\$x\$", ylabel = "\$f(x)\$")
 end
 
 function plot_fourier!(bc, I=[0,2π];label="")
@@ -42,8 +42,8 @@ function plot_fourier!(bc, I=[0,2π];label="")
     N_pad = N + n_pad
     h_pad = (b-a)/(2N_pad-1)
     xj_pad = a .+ h_pad*(0:2N_pad-2)
-　　fNj_pad = real((2N_pad-1)*ifft(ifftshift(bc_pad)))
-　　plot!(xj_pad, fNj_pad, label=label)
+    fNj_pad = real((2N_pad-1)*ifft(ifftshift(bc_pad)))
+    plot!(xj_pad, fNj_pad, label=label)
 end
 
 function plot_fouriercoeffs(bc)
@@ -334,4 +334,60 @@ function chebint(a; I=[-1,1])# Input is Two-sided
     M = length(a)
     n = 0:2:M-1
     return sum(2a[1:2:end]./(1.0 .- n.^2))*((I[2]-I[1])/2)
+end
+
+function chebroots(a, I=[-1,1]) # Input is two-sided Chebyshev
+    I_lo = I[1]; I_up = I[2]
+    n = length(a)
+    # create colleague matrix
+    du = [1; ones(n-3)*0.5]
+    dl = ones(n-2)*0.5
+    d  = zeros(n-1)
+    A  = Tridiagonal(dl, d, du)
+    B = zeros(n-1,n-1)
+    B[end,:] = a[1:end-1]
+    C = A - (1/(2*a[n]))*B
+    x = eigvals(C)    
+    ε = 100*eps()*(I_up-I_lo)*0.5 
+    if I_lo==-1.0 && I_up==1.0
+        return real(x[(-1-ε .≤ real(x) .≤ 1+ε) .& (imag(x) .≈ 0)])
+    else
+        x = real(x[(-1-ε .≤ real(x) .≤ 1+ε) .& (imag(x) .≈ 0)])
+        return (1.0 .- x).*I_lo/2 + (1.0 .+ x).*I_up/2
+    end
+end 
+
+function endpoints_of_cheb(a) # Input is two-sided Chebyshev
+    n = length(a)
+    atm1 = dot((-1).^(0:n-1),a) # endpoint at -1
+    at1 = sum(a) # endpoint at 1
+    return atm1, at1
+end
+
+function chebmax(a, I=[-1,1]) # Input is two-sided Chebyshev
+    M = length(a)
+    b = chebdiff(a)
+    x = chebroots(b)
+    fxc = eval_cheb(a, x)
+    # k = 0:M-1
+    # fxc = cos.((Vector(k))' .* acos.(x)) * a
+    ep = endpoints_of_cheb(a)
+    fvals = [ep[1];fxc[1:end];ep[2]]
+    x = [interval(-1);x;interval(1)]
+    ind = argmax(fvals)
+    return x[ind], fvals[ind]
+end
+
+function chebmin(a, I=[-1,1]) # Input is two-sided Chebyshev
+    M = length(a)
+    b = chebdiff(a)
+    x = chebroots(b)
+    fxc = eval_cheb(a, x)
+    # k = 0:M-1
+    # fxc = cos.((Vector(k))' .* acos.(x)) * a
+    ep = endpoints_of_cheb(a)
+    fvals = [ep[1];fxc[1:end];ep[2]]
+    x = [interval(-1);x;interval(1)]
+    ind = argmin(fvals)
+    return x[ind], fvals[ind]
 end

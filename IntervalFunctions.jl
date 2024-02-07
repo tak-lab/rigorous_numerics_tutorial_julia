@@ -90,22 +90,26 @@ end
 using IntervalArithmetic
 function int_mul(A::Matrix{T}, B::Matrix{T}) where T
     Cmid, Crad = mm_ufp(A, B);
-    return Cmid .± Crad
+    return interval(Cmid, Crad; format=:midpoint)
+    # return Cmid .± Crad
 end
 
 function int_mul(A::Matrix{Interval{T}}, B::Matrix{T}) where T
     Cmid, Crad = imm_ufp(mid.(A), radius.(A), B, zeros(size(B)));
-    return Cmid .± Crad
+    return interval(Cmid, Crad; format=:midpoint)
+    # return Cmid .± Crad
 end
 
 function int_mul(A::Matrix{T}, B::Matrix{Interval{T}}) where T
     Cmid, Crad = imm_ufp(A, zeros(size(A)), mid.(B), radius.(B));
-    return Cmid .± Crad
+    return interval(Cmid, Crad; format=:midpoint)
+    # return Cmid .± Crad
 end
 
 function int_mul(A::Matrix{Interval{T}}, B::Matrix{Interval{T}}) where T
     Cmid, Crad = imm_ufp(mid.(A), radius.(A), mid.(B), radius.(B));
-    return Cmid .± Crad
+    return interval(Cmid, Crad; format=:midpoint)
+    # return Cmid .± Crad
 end
 
 function int_mul(A::Matrix{Complex{T}}, B::Matrix{T}) where T
@@ -130,7 +134,7 @@ end
 
 
 ### Verify FFT using Interval Arithmetic
-function verifyfft(z::Vector{T}, sign=1) where T
+function verifyfft(z::Vector{Interval{T}}, sign=1) where T
     n = length(z); col = 1; array1 = true
     if n==1
         Z = map(T,z)
@@ -162,14 +166,16 @@ function verifyfft(z::Vector{T}, sign=1) where T
     Index = reshape([1:n*col;],n,col)
 
     theta = map(Interval,sign * (0:n-1)/n); # division exact because n is power of 2
-    Phi = cospi.(theta) + im*sinpi.(theta) # SLOW?
+    itheta = map(interval,theta)
+    Phi = cospi.(itheta) + im*sinpi.(itheta) # SLOW?
+    # Phi = cospi.(theta) + im*sinpi.(theta)
 
     v = [1:2:n;]
     w = [2:2:n;]
     t = Z[w,:]
     Z[w,:]  = Z[v,:] - t
     Z[v,:]  = Z[v,:] + t
-    for index　in 1: (log2n-1)    
+    for index in 1: (log2n-1)
         m = 2^index
         m2 = 2*m
         vw = reshape([1:n;],m2,Int(n/m2))
@@ -179,7 +185,7 @@ function verifyfft(z::Vector{T}, sign=1) where T
         indexw = reshape(Index[w[:],:],m,Int(col*n/m2))
         Phi1 = repeat(Phi[1:Int(n/m):end],outer=[1,Int(col*n/m2)])
         t = Phi1 .*  Z[indexw]
-        Z[indexw] = Z[indexv] - t 
+        Z[indexw] = Z[indexv] - t
         Z[indexv] = Z[indexv] + t
     end
     reverse(Z[2:end,:],dims=2)
@@ -196,29 +202,77 @@ function verifyfft(z::Vector{T}, sign=1) where T
 end
 
 ### Rigorous convolution algorithm via FFT
-function powerconvfourier(a::Vector{Complex{Interval{T}}},p) where T
+function powerconvfourier(ia::Vector{Complex{Interval{T}}},p) where T
     M = Int((length(a)+1)/2) # length(a) = 2M-1
     N = (p-1)*M
-    ia = map(Interval, a)
 
     length_ia = 2*p*M-1
     length_ia_ext = nextpow(2,length_ia)# 2pM-2+2L
-    
+
     L = Int((length_ia_ext - length_ia + 1)/2)
-    
+
     # step.1 : padding (p-1)M + L zeros for each sides
     ia_ext = map(Complex{Interval},zeros(length_ia_ext))
     ia_ext[L+N+1:end-L-N+1] = ia  #\tilda{a}
 
     # step.2 : inverse fft
     ib_ext = verifyfft(ifftshift(ia_ext), -1) #sign = -1 : ifft
-    
+
     # step.3 : power p elementwisely
     ib_extᵖ = ib_ext.^p
-    
+
     # step.4 : fft with rescaling
     ic_extᵖ = fftshift(verifyfft(ib_extᵖ, 1)) * length_ia_ext^(p-1)  #sign = 1 : fft
-    
+
 #     return ic_extᵖ,ic_extᵖ
     return ic_extᵖ[L+N+1:end-N-L+1], ic_extᵖ[L+p:end-(L+p-2)] # return (truncated, full) version
+end
+
+function convfourier(ia...)
+    p = length(ia)
+    M = Int((length(ia[1])+1)/2) # length(a) = 2M-1
+    N = (p-1)*M
+
+    length_ia = 2*p*M-1
+    length_ia_ext = nextpow(2,length_ia)# 2pM-2+2L
+
+    # itbᵖ = ones(Interval,N+length(ia[1])+N)
+    ibp_ext = map(Complex{Interval},ones(length_ia_ext))
+
+    L = Int((length_ia_ext - length_ia + 1)/2)
+
+    for i = 1:p
+        # step.1 : padding (p-1)M + L zeros for each sides
+        ia_ext = map(Complex{Interval},zeros(length_ia_ext))
+        ia_ext[L+N+1:end-L-N+1] = ia[i]  #\tilda{a}
+        # step.2 : inverse fft
+        ib_ext = verifyfft(ifftshift(ia_ext), -1) #sign = -1 : ifft
+        # step.3 : power p elementwisely
+        ibp_ext = ibp_ext .* ib_ext
+        # ib_extᵖ = ibp_ext.^p
+    end
+    # step.4 : fft with rescaling
+    ic_extᵖ = fftshift(verifyfft(ibp_ext, 1)) * length_ia_ext^(p-1)  #sign = 1 : fft
+    return ic_extᵖ[L+N+1:end-N-L+1], ic_extᵖ[L+p:end-(L+p-2)] # return (truncated, full) version
+end
+
+function convcos(ia...) # Input: Two-sided (real)
+    M = length(ia[1])
+    FourierCoeffs = []
+    for i = 1:length(ia)
+        ia[i][1] = ia[i][1]; ia[i][2:end] = 0.5 * ia[i][2:end] # Two-sided -> One-sided (real)
+        FC_local = map(Complex,[reverse(ia[i][2:end]); ia[i]])
+        if i==1
+            FourierCoeffs = tuple(FC_local)
+        else
+            FourierCoeffs = tuple(FourierCoeffs...,tuple(FC_local)...)
+        end
+    end
+    icp, icp_full = convfourier(FourierCoeffs...) # real -> complex (input)
+    iap = zeros(Interval,M)
+    iap[1] = real(icp[M]); iap[2:end] = 2 * real(icp[M+1:end]) # One-sided (complex) -> Two-sided (real)
+    N = Int((length(icp_full)+1)/2) #2N-1
+    iap_full = zeros(Interval,N)
+    iap_full[1] = real(icp_full[N]); iap_full[2:end] = 2 * real(icp_full[N+1:end]) # One-sided (complex) -> Two-sided (real)
+    return iap, iap_full
 end
