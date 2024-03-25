@@ -148,7 +148,19 @@ function chebcoeffs(f,M,I=[-1,1])
     return ChebCoeffs # return Two-sided Chebyshev
 end
 
-function cheb(f,I=[-1;1]; tol = 5e-15,Nmax = 10000)
+function chebcoeffs_complex(f,M,I=[-1,1])
+    a = I[1]; b = I[2]
+    n = M-1
+    cpts  = chebpts(n, a, b)
+    fvals = f.(cpts)
+    FourierCoeffs = fft([reverse(fvals);fvals[2:end-1]])
+    ChebCoeffs = FourierCoeffs[1:n+1]/n
+    ChebCoeffs[1] = ChebCoeffs[1]/2
+    ChebCoeffs[end] = ChebCoeffs[end]/2
+    return ChebCoeffs # return Two-sided Chebyshev
+end
+
+function cheb(f,I=[-1,1]; tol = 5e-15,Nmax = 10000)
     a = I[1]; b = I[2]; m = 0.5*(a+b); r = 0.5*(b-a); x = rand(5)
     x1 = m .+ x*r; x2 = m .- x*r
     if f.(x1) ≈ f.(x2)
@@ -176,6 +188,52 @@ function cheb(f,I=[-1;1]; tol = 5e-15,Nmax = 10000)
         cc[1:2:end] .= 0
     end
     return cc # return Two-sided Chebyshev
+end
+
+using GenericFFT
+function bigcheb(f,I=[-1,1]; tol = 5e-15,Nmax = 10000)
+    a = I[1]; b = I[2]; m = 0.5*(a+b); r = 0.5*(b-a); x = rand(5)
+    x1 = m .+ x*r; x2 = m .- x*r
+    if f.(x1) ≈ f.(x2)
+        odd_even = 1 # even function: 1
+    elseif f.(x1) ≈ -f.(x2)
+        odd_even = -1 #  odd function: -1
+    else
+        odd_even = 0 # otherwise: 0
+    end
+    i = 3
+    schbc = 0 # sampling chebyshev coefficients
+    while true
+        schbc = chebcoeffs(f,big(2^i+1),I)
+        if all(abs.(schbc[end-2:end]) .< tol) || (2^i+1 > Nmax) 
+            break
+        end
+        i += 1
+    end    
+    M = findlast(abs.(schbc) .> tol)
+    cc = schbc[1:M]
+    # cc = chebcoeffs(f,M,I)
+    if odd_even == 1 # even function
+        cc[2:2:end] .= 0
+    elseif odd_even == -1 # odd function
+        cc[1:2:end] .= 0
+    end
+    return cc # return Two-sided Chebyshev
+end
+
+function cheb_complex(f,I=[-1;1]; tol = 5e-15,Nmax = 10000)
+    i = 3
+    schbc = 0 # sampling chebyshev coefficients
+    while true
+        schbc = chebcoeffs_complex(f,2^i+1,I)
+        if all(abs.(schbc[end-2:end]) .< tol) || (2^i+1 > Nmax) 
+            break
+        end
+        i += 1
+    end    
+    M = findlast(abs.(schbc) .> tol)
+    return schbc[1:M]
+    # return cc # return Two-sided Chebyshev
 end
 
 function plot_chebcoeffs(f)
