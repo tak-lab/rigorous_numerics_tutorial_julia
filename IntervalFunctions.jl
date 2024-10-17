@@ -114,24 +114,143 @@ end
 
 function int_mul(A::Matrix{Complex{T}}, B::Matrix{T}) where T
     Ar = real.(A); Ai = imag.(A); # (Ar + im*Ai)*B = Ar*B + im*(Ai*B)
-    return int_mul(Ar, B) + im * int_mul(Ar, B)
+    return complex.(int_mul(Ar, B), int_mul(Ar, B))
 end
 
 function int_mul(A::Matrix{T}, B::Matrix{Complex{T}}) where T
     Br = real.(B); Bi = imag.(B); # A*(Br + im*Bi) = A*Br + im*(A*Bi)
-    return int_mul(A, Br) + im * int_mul(A, Bi)
+    return complex.(int_mul(A, Br), int_mul(A, Bi))
 end
 
 function int_mul(A::Matrix{Complex{T}}, B::Matrix{Complex{T}}) where T
     Ar = real.(A); Ai = imag.(A); Br = real.(B); Bi = imag.(B);
     # (Ar + im*Ai)*(Br + im*Bi) = (Ar*Br - Ai*Bi) + im*(Ar*Bi + Ai*Br)
-    return (int_mul(Ar,Br) - int_mul(Ai, Bi)) + im * (int_mul(Ar, Bi) + int_mul(Ai, Br))
+    return complex.((int_mul(Ar,Br) - int_mul(Ai, Bi)), (int_mul(Ar, Bi) + int_mul(Ai, Br)))
 end
 
 
 ### Interval Linear system solver
+import LinearAlgebra: opnorm
+function LinearAlgebra.opnorm(a::Matrix{Complex{Interval{Float64}}},p::String)
+    if p == "1"
+        suma = sum(abs.(a), dims = 1)
+        return interval(maximum(inf,suma), maximum(sup,suma))
+    elseif p == "Inf"
+        suma = sum(abs.(a), dims = 2)
+        return interval(maximum(inf,suma),maximum(sup,suma))
+    end
+    return NaN
+end
+
+function LinearAlgebra.opnorm(a::Matrix{Interval{Float64}},p::String)
+    if p == "1"
+        suma = sum(abs.(a), dims = 1)
+        return interval(maximum(inf,suma), maximum(sup,suma))
+    elseif p == "Inf"
+        suma = sum(abs.(a), dims = 2)
+        return interval(maximum(inf,suma),maximum(sup,suma))
+    end
+    return NaN
+end
+
+function verifylss_iB(iA,iB) # verify the solution element-wisely
+    A = mid.(iA); B = mid.(iB)
+    X̄ = A\B
+    n = size(X̄,2)
+    R = inv(A)
+    #########
+    iG = interval(Matrix{Float64}(I, n, n)) - interval(R)*iA
+    α = opnorm(iG,"Inf")# Interval arithmetic
+    #########
+    if sup(α) < 1
+        η = (abs.(iG)*interval(ones(n)))/(interval(1)-α)
+        Err = interval(zeros(n,n))
+        X̄ = interval(X̄)
+        ir = iA*X̄ - iB # Interval arithmetic
+        iRr = interval(R)*ir
+        for i = 1:n
+            Err[:,i] = abs.(iRr[:,i]) + interval(sup(norm(iRr[:,i],Inf)))*η # Interval arithmetic
+        end
+        return interval(X̄, Err, format=:midpoint)
+    else
+        println("Oh my way, verification is failed...")
+        return nan
+    end
+end
 
 
+### Interval all eigenvalues solver
+
+function verifyalleig(iA, X)
+    n = size(iA, 2)
+    # iD = diagm(interval(λ))
+    iX = interval(X)
+    iB = int_mul(iA, iX)
+    iG = verifylss_iB(iX, iB)
+    ir = interval(zeros(n))
+    ic = diag(iG)
+    for i = 1:n
+        for j = 1:n
+            if i != j
+                ir[i] += interval(mag(iG[i, j]))
+            end
+        end
+        ir[i] += interval(radius(ic[i]))
+    end
+    return interval(ic, ir, format=:midpoint)
+end
+
+### Interval eigen solver (eigpair)
+
+function verifyeig(iA::Matrix{Interval{T}}, lam, x, B=Matrix{T}(I, size(iA))) where {T<:Real}
+    if typeof(lam) <: Complex || eltype(x) <: Complex
+        lam = convert(Complex{T}, lam)
+        x = convert.(Complex{T}, Vector(x))
+    else
+        lam = convert(T, lam)
+        x = convert.(T, Vector(x))
+    end
+    x = x ./ norm(x)
+    ysize = length(x)
+    ilam = interval(lam)
+    ix = interval(x)
+    iB = interval(B)
+
+    function iDF(w)
+        mat = (zeros(typeof(ilam), length(w), length(w)))
+        mat[1, 2:end] = transpose(interval(2) * (ix + w[2:end]))
+        mat[2:end, 1] = -iB * (ix + w[2:end])
+        mat[2:end, 2:end] = iA - (ilam + w[1]) * iB
+        return mat
+    end
+    zero = zeros(T, ysize + 1)
+    R = inv(mid.(iDF(zero)))
+    iR = interval(R)
+    iz = -iR * [dot(ix, ix) - interval(1.0); iA * ix - ilam * iB * ix]
+    ϵ = 2 * sup(norm(iz, 1))
+    if isreal(lam) && isreal(x)
+        lam = real(lam)
+        x = real(x)
+        id = interval(0, ϵ; format=:midpoint)
+        iy = interval.(zeros(ysize), ϵ; format=:midpoint)
+        iI = interval(Matrix{T}(I, ysize + 1, ysize + 1))
+    else
+        id = Complex(interval(0, ϵ; format=:midpoint), interval(0, ϵ; format=:midpoint))
+        iy = Complex.(interval.(zeros(ysize), ϵ; format=:midpoint), interval.(zeros(ysize), ϵ; format=:midpoint))
+        iI = interval(Matrix{Complex{T}}(I, ysize + 1, ysize + 1))
+    end
+    iw = [id; iy]
+    g(w) = iz + (iI - iR * iDF(w)) * w
+    gw = g(iw)
+    if all(issubset_interval.(gw, iw)) #gw .⊂ iw
+        # while maximum(radius, gw) / norm([lam; x], 1) >= 1e3 * eps(T)
+        #     gw = g(gw)
+        # end
+        return ilam + gw[1] #, ix .+ gw[2:end] #固有ベクトルも返すようにする
+    else
+        return NaN
+    end
+end
 
 ### Verify FFT using Interval Arithmetic
 function verifyfft(z::Vector{Interval{T}}, sign=1) where T
