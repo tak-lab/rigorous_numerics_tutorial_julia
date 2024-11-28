@@ -356,13 +356,18 @@ function convfourier(ia...)
     length_ia_ext = nextpow(2,length_ia)# 2pM-2+2L
 
     # itbᵖ = ones(Interval,N+length(ia[1])+N)
-    ibp_ext = map(Complex{Interval},ones(length_ia_ext))
+    # ibp_ext = map(Complex{Interval},ones(length_ia_ext))
+    ibp_ext = interval(ones(ComplexF64, length_ia_ext))
 
     L = Int((length_ia_ext - length_ia + 1)/2)
 
     for i = 1:p
         # step.1 : padding (p-1)M + L zeros for each sides
-        ia_ext = map(Complex{Interval},zeros(length_ia_ext))
+        # ia_ext = map(Complex{Interval},zeros(length_ia_ext))
+        ia_ext = interval(zeros(ComplexF64,length_ia_ext))
+        @show length(ia[i])
+        @show length(ia_ext[L+N+1:end-L-N+1])
+        @show length(ia[i])
         ia_ext[L+N+1:end-L-N+1] = ia[i]  #\tilda{a}
         # step.2 : inverse fft
         ib_ext = verifyfft(ifftshift(ia_ext), -1) #sign = -1 : ifft
@@ -388,10 +393,10 @@ function convcos(ia...) # Input: Two-sided (real)
         end
     end
     icp, icp_full = convfourier(FourierCoeffs...) # real -> complex (input)
-    iap = zeros(Interval,M)
+    iap = interval(zeros(M))
     iap[1] = real(icp[M]); iap[2:end] = 2 * real(icp[M+1:end]) # One-sided (complex) -> Two-sided (real)
     N = Int((length(icp_full)+1)/2) #2N-1
-    iap_full = zeros(Interval,N)
+    iap_full = interval(zeros(N))
     iap_full[1] = real(icp_full[N]); iap_full[2:end] = 2 * real(icp_full[N+1:end]) # One-sided (complex) -> Two-sided (real)
     return iap, iap_full
 end
