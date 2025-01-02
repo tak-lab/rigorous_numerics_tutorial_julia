@@ -333,7 +333,7 @@ function powerconvfourier(ia::Vector{Complex{Interval{T}}},p) where T
     L = Int((length_ia_ext - length_ia + 1)/2)
 
     # step.1 : padding (p-1)M + L zeros for each sides
-    ia_ext = map(Complex{Interval},zeros(length_ia_ext))
+    ia_ext = interval(zeros(Complexlength_ia_ext))
     ia_ext[L+N+1:end-L-N+1] = ia  #\tilda{a}
 
     # step.2 : inverse fft
