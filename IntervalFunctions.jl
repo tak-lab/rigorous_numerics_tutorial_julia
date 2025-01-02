@@ -253,11 +253,10 @@ function verifyeig(iA::Matrix{Interval{T}}, lam, x, B=Matrix{T}(I, size(iA))) wh
 end
 
 ### Verify FFT using Interval Arithmetic
-function verifyfft(z::Vector{Interval{T}}, sign=1) where T
+function verifyfft(z::Vector{Complex{Interval{T}}}, sign=1) where T
     n = length(z); col = 1; array1 = true
     if n==1
-        Z = map(T,z)
-        return Z
+        return z
     else
         isrow_ = false
     end
@@ -272,21 +271,22 @@ function verifyfft(z::Vector{Interval{T}}, sign=1) where T
         f = f >> 1
         v = append!(v,f.+v)
     end
-    z2 = zeros(n,col)
-    if isa(real(z[1]),Interval)
-        z2 = map(T,z2)
-    end
+    z2 = zeros(Complex{Interval{T}},n,col)
+    # if isa(real(z[1]),Interval)
+    #     z2 = map(Interval{T},z2)
+    # end
     # replace z
     for j = 1: n
         z2[j,:] = z[v[j]+1,:]
     end
     #Danielson-Lanczos algorithm
-    Z = complex(map(Interval,z2))
+    # Z = complex.(interval(z2))
+    Z = z2
     Index = reshape([1:n*col;],n,col)
 
-    theta = map(Interval,sign * (0:n-1)/n); # division exact because n is power of 2
-    itheta = map(interval,theta)
-    Phi = cospi.(itheta) + im*sinpi.(itheta) # SLOW?
+    theta = sign * (0:n-1)/n; # division exact because n is power of 2
+    itheta = interval(theta)
+    Phi = complex.(cospi.(itheta),sinpi.(itheta)) # SLOW?
     # Phi = cospi.(theta) + im*sinpi.(theta)
 
     v = [1:2:n;]
@@ -309,16 +309,18 @@ function verifyfft(z::Vector{Interval{T}}, sign=1) where T
     end
     reverse(Z[2:end,:],dims=2)
      if sign==-1
-        Z = Z/n
+        Z = Z/interval(n)
     end
     if isrow_
-        Z = transpose(Z)　#transpose of Z
+        Z = transpose(Z) #transpose of Z
     end
     if array1
         Z = Z[:,1]
     end
     return Z
 end
+
+verifyfft(z::Vector{Interval{T}}, sign=1) where {T} = verifyfft(complex.(z), sign)
 
 ### Rigorous convolution algorithm via FFT
 function powerconvfourier(ia::Vector{Complex{Interval{T}}},p) where T
@@ -347,6 +349,7 @@ function powerconvfourier(ia::Vector{Complex{Interval{T}}},p) where T
     return ic_extᵖ[L+N+1:end-N-L+1], ic_extᵖ[L+p:end-(L+p-2)] # return (truncated, full) version
 end
 
+
 function convfourier(ia...)
     p = length(ia)
     M = Int((length(ia[1])+1)/2) # length(a) = 2M-1
@@ -365,9 +368,6 @@ function convfourier(ia...)
         # step.1 : padding (p-1)M + L zeros for each sides
         # ia_ext = map(Complex{Interval},zeros(length_ia_ext))
         ia_ext = interval(zeros(ComplexF64,length_ia_ext))
-        @show length(ia[i])
-        @show length(ia_ext[L+N+1:end-L-N+1])
-        @show length(ia[i])
         ia_ext[L+N+1:end-L-N+1] = ia[i]  #\tilda{a}
         # step.2 : inverse fft
         ib_ext = verifyfft(ifftshift(ia_ext), -1) #sign = -1 : ifft
