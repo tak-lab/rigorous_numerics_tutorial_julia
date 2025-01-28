@@ -350,7 +350,7 @@ function powerconvfourier(ia::Vector{Complex{Interval{T}}},p) where T
 end
 
 
-function convfourier(ia...)
+function convfourier(ia::Vector{Complex{Interval{T}}}...) where {T<:Real}
     p = length(ia)
     M = Int((length(ia[1])+1)/2) # length(a) = 2M-1
     N = (p-1)*M
@@ -376,15 +376,15 @@ function convfourier(ia...)
         # ib_extᵖ = ibp_ext.^p
     end
     # step.4 : fft with rescaling
-    ic_extᵖ = fftshift(verifyfft(ibp_ext, 1)) * length_ia_ext^(p-1)  #sign = 1 : fft
+    ic_extᵖ = fftshift(verifyfft(ibp_ext, 1)) * interval(length_ia_ext)^interval(p-1)  #sign = 1 : fft
     return ic_extᵖ[L+N+1:end-N-L+1], ic_extᵖ[L+p:end-(L+p-2)] # return (truncated, full) version
 end
 
-function convcos(ia...) # Input: Two-sided (real)
+function convcos(ia::Vector{Interval{T}}...) where {T<:Real}# Input: Two-sided (real)
     M = length(ia[1])
     FourierCoeffs = []
     for i = 1:length(ia)
-        ia[i][1] = ia[i][1]; ia[i][2:end] = 0.5 * ia[i][2:end] # Two-sided -> One-sided (real)
+        ia[i][1] = ia[i][1]; ia[i][2:end] = interval(0.5) * ia[i][2:end] # Two-sided -> One-sided (real)
         FC_local = map(Complex,[reverse(ia[i][2:end]); ia[i]])
         if i==1
             FourierCoeffs = tuple(FC_local)
@@ -394,9 +394,9 @@ function convcos(ia...) # Input: Two-sided (real)
     end
     icp, icp_full = convfourier(FourierCoeffs...) # real -> complex (input)
     iap = interval(zeros(M))
-    iap[1] = real(icp[M]); iap[2:end] = 2 * real(icp[M+1:end]) # One-sided (complex) -> Two-sided (real)
+    iap[1] = real(icp[M]); iap[2:end] = interval(2) * real(icp[M+1:end]) # One-sided (complex) -> Two-sided (real)
     N = Int((length(icp_full)+1)/2) #2N-1
     iap_full = interval(zeros(N))
-    iap_full[1] = real(icp_full[N]); iap_full[2:end] = 2 * real(icp_full[N+1:end]) # One-sided (complex) -> Two-sided (real)
+    iap_full[1] = real(icp_full[N]); iap_full[2:end] = interval(2) * real(icp_full[N+1:end]) # One-sided (complex) -> Two-sided (real)
     return iap, iap_full
 end

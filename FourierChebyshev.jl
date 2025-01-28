@@ -128,6 +128,54 @@ function powerconvfourier(a::Vector{Complex{T}},p) where T
     return cᵖ[N+1:end-N], cᵖ[p:end-(p-1)]# return (truncated, full) version
 end
 
+function convfourier(ia...)
+    p = length(ia)
+    M = Int((length(ia[1])+1)/2) # length(a) = 2M-1
+    N = (p-1)*M
+
+    length_ia = 2*p*M-1
+    # length_ia_ext = nextpow(2,length_ia)# 2pM-2+2L
+
+    ibp_ext = (ones(ComplexF64, length_ia))
+
+    L = 0
+
+    for i = 1:p
+        # step.1 : padding (p-1)M + L zeros for each sides
+        ia_ext = (zeros(ComplexF64,length_ia))
+        ia_ext[L+N+1:end-L-N] = ia[i]  #\tilda{a}
+        # step.2 : inverse fft
+        ib_ext = ifft(ifftshift(ia_ext))
+        # step.3 : power p elementwisely
+        ibp_ext = ibp_ext .* ib_ext
+    end
+    # step.4 : fft with rescaling
+    ic_extᵖ = fftshift(fft(ibp_ext)) * (length_ia)^(p-1)
+    return ic_extᵖ[L+N+1:end-N-L], ic_extᵖ[L+p:end-(L+p-1)] # return (truncated, full) version
+end
+
+function convcos(ia...) # Input: Two-sided (real)
+    M = length(ia[1])
+    FourierCoeffs = []
+    for i = 1:length(ia)
+        ia[i][1] = ia[i][1]; ia[i][2:end] = (0.5) * ia[i][2:end] # Two-sided -> One-sided (real)
+        FC_local = map(Complex,[reverse(ia[i][2:end]); ia[i]])
+        if i==1
+            FourierCoeffs = tuple(FC_local)
+        else
+            FourierCoeffs = tuple(FourierCoeffs...,tuple(FC_local)...)
+        end
+    end
+    icp, icp_full = convfourier(FourierCoeffs...) # real -> complex (input)
+    iap = zeros(M)
+    iap[1] = real(icp[M]); iap[2:end] = 2 * real(icp[M+1:end]) # One-sided (complex) -> Two-sided (real)
+    N = Int((length(icp_full)+1)/2) #2N-1
+    iap_full = (zeros(N))
+    iap_full[1] = real(icp_full[N]); iap_full[2:end] = (2) * real(icp_full[N+1:end]) # One-sided (complex) -> Two-sided (real)
+    return iap, iap_full
+end
+
+
 
 ### Chebyshev functions
 function chebpts(n, a=-1, b=1) # n: order of Chebyshev polynomials
